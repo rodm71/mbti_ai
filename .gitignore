@@ -1,0 +1,16 @@
+# Ignore Python virtual environments
+venv/
+__pycache__/
+
+# Ignore IDE stuff
+.vscode/
+.idea/
+
+# Ignore secrets
+*.env
+
+# Ignore PyCharm / VSCode config files
+*.log
+
+# Ignore MACOs things
+.DS_Store
