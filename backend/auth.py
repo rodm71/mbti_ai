@@ -1,12 +1,12 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from passlib.context import CryptContext  # Pour hash/verif
-from sqlalchemy.orm import Session
+from fastapi import Depends, HTTPException, status # type: ignore
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials # type: ignore
+from passlib.context import CryptContext  # type: ignore # Pour hash/verif
+from sqlalchemy.orm import Session # type: ignore
 from database import get_db
 from datetime import datetime, timedelta
 from crud import get_user_by_email
 from datetime import datetime, timedelta
-from jose import JWTError, jwt  # Pour le token
+from jose import JWTError, jwt  # type: ignore # Pour le token
 import os
 
 # Contexte de hash pour bcrypt

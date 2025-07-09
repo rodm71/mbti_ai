@@ -1,22 +1,22 @@
-from fastapi import FastAPI, HTTPException, Depends, status  # On importe FastAPI + dépendances
-from sqlalchemy.orm import Session  # On importe la session DB
+from fastapi import FastAPI, HTTPException, Depends, status, Security  # type: ignore # On importe FastAPI + dépendances
+from sqlalchemy.orm import Session  # type: ignore # On importe la session DB
 from database import get_db  # Notre utilitaire pour ouvrir/fermer la connexion
 from models import Base, User  # On importe la base + User pour créer la table
 from database import engine  # Le moteur de connexion
-from schemas import UserCreate, UserOut, UserLogin  # Les schémas entrée/sortie
-from crud import get_user_by_email, create_user  # La logique CRUD
-from passlib.context import CryptContext  # Pour hasher le mot de passe
+from schemas import UserCreate, UserOut, UserLogin, MBTICreate, MBTIOut  # Les schémas entrée/sortie
+from crud import get_user_by_email, create_user, create_mbti, get_mbti_for_user  # La logique CRUD
+from passlib.context import CryptContext  # type: ignore # Pour hasher le mot de passe
 from auth import verify_password, create_access_token, get_current_user
 
 
 app = FastAPI()  # On crée l’API
 
-# 👇 CRUCIAL : on définit la variable !
+# CRUCIAL : on définit la variable !
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 Base.metadata.create_all(bind=engine)  # On crée les tables si elles n’existent pas déjà
 
-#Route de création d'utilisateur
+# Route de création d'utilisateur
 @app.post("/register", response_model=UserOut)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)                       # On verifie si l'email est / n'est pas déjà présent en bdd
@@ -26,7 +26,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     return create_user(db=db, user=user, hashed_password=hashed_password)   # Et on créé l'user en bdd
 
 
-#Route de Connexion
+# Route de Connexion
 @app.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)
@@ -43,3 +43,22 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 @app.get("/me")
 def read_users_me(current_user: User = Depends(get_current_user)):      # Le "Depends" oblige la route à vérifier le token avant de continuer
     return {"id": current_user.id, "email": current_user.email}
+
+
+# Route pour poster un nouveau MBTI
+@app.post("/mbti", response_model=MBTIOut)  #MBTIOut = le format que l'on va renvoyé à la bdd
+def save_mbti(
+    mbti: MBTICreate,                       # Le format que nous recevont par la page et l'user
+    current_user: User = Security(get_current_user),       # On vérifie le token de l'user et récupère ses données
+    db: Session = Depends(get_db)                          # La session de la bdd
+):
+    return create_mbti(db=db, user_id=current_user.id, mbti_type=mbti.mbti_type)  # Appel de la fonciton CRUD
+
+
+# Route pour récupérer le/les MBTI de l'user actuel
+@app.get("/mbti/me", response_model=list[MBTIOut])      #Cette route est privé par le /me
+def read_my_mbti(
+    current_user: User = Security(get_current_user),    # Vérif du token JWT
+    db: Session = Depends(get_db)
+):
+    return get_mbti_for_user(db=db, user_id=current_user.id)    
