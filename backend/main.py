@@ -7,9 +7,19 @@ from schemas import UserCreate, UserOut, UserLogin, MBTICreate, MBTIOut  # Les s
 from crud import get_user_by_email, create_user, create_mbti, get_mbti_for_user  # La logique CRUD
 from passlib.context import CryptContext  # type: ignore # Pour hasher le mot de passe
 from auth import verify_password, create_access_token, get_current_user
+from fastapi.middleware.cors import CORSMiddleware # type: ignore
 
 
 app = FastAPI()  # On crée l’API
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Ou ["*"] pour tout autoriser (pas pour prod)
+    allow_credentials=True,
+    allow_methods=["*"],  # Autorise POST, GET, OPTIONS, etc.
+    allow_headers=["*"],
+)
+
 
 # CRUCIAL : on définit la variable !
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
