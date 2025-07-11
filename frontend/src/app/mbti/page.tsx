@@ -29,10 +29,36 @@ export default function MBTIPage() {
     e.preventDefault();
     console.log("Réponses : ", answers);
 
-    // Ici tu enverras à ton backend pour calculer le type MBTI
-    // Par ex :
-    // const res = await fetch("http://127.0.0.1:8000/mbti", { ... })
+    // ✅ Récupère le JWT dans le localStorage
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        console.error("❌ Pas de token !");
+        return;
+    }
+
+    // ✅ Exemple : on calcule le type MBTI côté Front pour l'instant
+    // 👉 Ici tu mettras ta logique de calcul plus tard
+    const fakeType = "ENTJ"; // Ex : temporaire pour tester
+
+    try {
+        const res = await fetch("http://127.0.0.1:8000/mbti", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                mbti_type: fakeType, // ⬅️ doit matcher ton MBTICreate
+            }),
+        });
+
+        const data = await res.json();
+        console.log("✅ Réponse FastAPI /mbti :", data);
+    } catch (err) {
+        console.error("❌ Erreur POST /mbti :", err);
+    }
   };
+
 
   return (
     <main className="p-8">
