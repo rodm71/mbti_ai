@@ -1,84 +1,39 @@
-"use client"; // Ce composant tourne côté navigateur
+"use client";   // Dit à Next.js : ce composant tourne côté navigateur ➜ autorise les hooks et localStorage
 
-import { useState } from "react";
+import { useState } from "react";               // Import du hook pour stocker
+import { questions } from "@/data/questions";   // Import des questions
 
 export default function MBTIPage() {
-  // La liste des questions
-  const questions = [
-    "Vous arrivez à aller parler à quelqu'un qui vous intéresse",
-    "Vous aimez planifier chaque détail avant d'agir",
-    "Vous préférez être seul plutôt qu'entouré de monde",
-    "Vous prenez des décisions sur un coup de tête",
-    "Vous aimez analyser les choses en profondeur",
-    "Vous ressentez facilement l'humeur des autres"
-  ];
+  const [responses, setResponses] = useState<Record<number, number>>({});       // Pour stocker les réponses
 
-  // state pour stocker les réponses : clé = index question, valeur = score (1-6)
-  const [answers, setAnswers] = useState<{ [key: number]: number }>({});
-
-  // Fonction pour gérer quand un radio bouton change
-  const handleChange = (questionIndex: number, value: number) => {
-    setAnswers({
-      ...answers,
-      [questionIndex]: value,
-    });
+  const handleChange = (questionId: number, value: number) => {                 // Màj des réponses quand on clic sur un bouton radio
+    setResponses((prev) => ({ ...prev, [questionId]: value }));
   };
 
-  // Soumission : affichage dans la console pour l'instant
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Réponses : ", answers);
-
-    // ✅ Récupère le JWT dans le localStorage
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-        console.error("❌ Pas de token !");
-        return;
-    }
-
-    // ✅ Exemple : on calcule le type MBTI côté Front pour l'instant
-    // 👉 Ici tu mettras ta logique de calcul plus tard
-    const fakeType = "ENTJ"; // Ex : temporaire pour tester
-
-    try {
-        const res = await fetch("http://127.0.0.1:8000/mbti", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-                mbti_type: fakeType, // ⬅️ doit matcher ton MBTICreate
-            }),
-        });
-
-        const data = await res.json();
-        console.log("✅ Réponse FastAPI /mbti :", data);
-    } catch (err) {
-        console.error("❌ Erreur POST /mbti :", err);
-    }
+    console.log("✅ Réponses utilisateur :", responses);
   };
-
 
   return (
-    <main className="p-8">
+    <main className="p-8 flex flex-col items-center">
       <h1 className="text-2xl font-bold mb-6">Questionnaire MBTI</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {questions.map((q, index) => (
-          <div key={index} className="mb-4">
-            <p className="mb-2">{q}</p>
-            <div className="flex gap-4">
-              {[1, 2, 3, 4, 5, 6].map((value) => (
-                <label key={value} className="flex flex-col items-center">
-                  <input
+      <form onSubmit={handleSubmit} className="flex flex-col gap-8 w-full max-w-4xl">
+        {questions.map((question) => (                                                      // Génération des questions
+          <div key={question.id} className="flex flex-col gap-2">
+            <p className="font-medium">{question.text}</p>
+            <div className="flex justify-between gap-4">
+              {[1, 2, 3, 4, 5, 6].map((value) => (                                         // 6 boutons radio par question
+                <label key={value} className="flex flex-col items-center text-sm">
+                  <input                                                                   
                     type="radio"
-                    name={`question-${index}`}
-                    value={value}
-                    checked={answers[index] === value}
-                    onChange={() => handleChange(index, value)}
+                    name={`question-${question.id}`}                                        // Oblige le navigateur à choisir une seule réponse par question
+                    value={value}                                                          // Le score (1 à 6)
+                    checked={responses[question.id] === value}                             // Affiche la réponse choisie
+                    onChange={() => handleChange(question.id, value)}
                   />
-                  <span className="text-xs">{value}</span>
+                  {value}
                 </label>
               ))}
             </div>
@@ -87,7 +42,7 @@ export default function MBTIPage() {
 
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded"
+          className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
         >
           Envoyer mes réponses
         </button>
