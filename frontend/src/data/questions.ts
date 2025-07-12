@@ -1,11 +1,5 @@
 // frontend/src/data/questions.ts
-
-export type MBTIQuestion = {
-  id: number;
-  text: string;
-  dimension: "EI" | "SN" | "TF" | "JP";
-  direction: "A" | "B";
-};
+import { MBTIQuestion } from "@/types/mbti";
 
 export const questions: MBTIQuestion[] = [
   // EI - Extraversion vs Introversion
