@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends, status, Security  # type: ignore # On importe FastAPI + dépendances
 from sqlalchemy.orm import Session  # type: ignore # On importe la session DB
 from database import get_db  # Notre utilitaire pour ouvrir/fermer la connexion
-from models import Base, User  # On importe la base + User pour créer la table
+from models import Base, User, MBTIResult  # On importe la base + User pour créer la table
 from database import engine  # Le moteur de connexion
 from schemas import UserCreate, UserOut, UserLogin, MBTICreate, MBTIOut  # Les schémas entrée/sortie
 from crud import get_user_by_email, create_user, create_mbti, get_mbti_for_user  # La logique CRUD
@@ -65,10 +65,10 @@ def save_mbti(
     return create_mbti(db=db, user_id=current_user.id, mbti_type=mbti.mbti_type)  # Appel de la fonciton CRUD
 
 
-# Route pour récupérer le/les MBTI de l'user actuel
-@app.get("/mbti/me", response_model=list[MBTIOut])      #Cette route est privé par le /me
-def read_my_mbti(
-    current_user: User = Security(get_current_user),    # Vérif du token JWT
-    db: Session = Depends(get_db)
-):
-    return get_mbti_for_user(db=db, user_id=current_user.id)    
+@app.get("/mbti/me")
+def get_my_mbti(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    result = db.query(MBTIResult).filter(MBTIResult.user_id == current_user.id).first()
+    if not result:
+        raise HTTPException(status_code=404, detail="Aucun type MBTI trouvé pour cet utilisateur.")
+    return {"mbti_type": result.mbti_type}
+
