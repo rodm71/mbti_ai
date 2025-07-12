@@ -65,10 +65,17 @@ def save_mbti(
     return create_mbti(db=db, user_id=current_user.id, mbti_type=mbti.mbti_type)  # Appel de la fonciton CRUD
 
 
-@app.get("/mbti/me")
-def get_my_mbti(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    result = db.query(MBTIResult).filter(MBTIResult.user_id == current_user.id).first()
+@app.get("/mbti/me", response_model=MBTIOut)
+def get_last_mbti_for_user(current_user: User = Security(get_current_user), db: Session = Depends(get_db)):
+    result = (db.query(MBTIResult)
+        .filter(MBTIResult.user_id == current_user.id)
+        .order_by(MBTIResult.created_at.desc())  # 🔁 Trie du plus récent au plus ancien
+        .first()
+    )
+
     if not result:
-        raise HTTPException(status_code=404, detail="Aucun type MBTI trouvé pour cet utilisateur.")
-    return {"mbti_type": result.mbti_type}
+        raise HTTPException(status_code=404, detail="Aucun résultat MBTI trouvé.")
+
+    return result
+
 
