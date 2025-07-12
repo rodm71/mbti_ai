@@ -1,60 +1,73 @@
-"use client";                       // Pour signaler que ce composant dois s'executer côté navigateur et pouvoir utiliser les Hooks
-import { useState } from "react";   //useState -> Hook React pour mémoriser une valeur
+"use client"; // React côté client
 
-export default function RegisterPage() {            //Composant pour la page register
+import { useState } from "react";
+import { Button } from "@/components/ui/button"; // Composant Shadcn
+import Link from "next/link";
 
-    const [email, setEmail] = useState("");         //email -> Valeur du champs / setEmail -> Fonction pour changer la valeur
-    const [password, setPassword] = useState("");   //Idem que Email
+export default function RegisterPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => {    //HandleSubmit est appelé quand on clic sur l'envoie du formulaire
-        e.preventDefault();                                 // Pour empecher le navig de recharger la page
-        
-        try {
-            const res = await fetch("http://127.0.0.1:8000/register", {         // Fetch Post vers FastAPI /register
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",                             // Header pour préciser l'envoi de JSON
-            },
-            body: JSON.stringify({                                              // Contient les infos en JSON (email + password)
-                email,
-                password,
-            }),
-            });
+  // Soumission du formulaire d'inscription
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-            const data = await res.json();
-            console.log("✅ Register API response:", data);                     // Console log pour afficher la réponse
-        } catch (err) {
-            console.error("❌ Register error:", err);                           // Console log pour afficher l'erreur
-        }
-    };
+    try {
+      const res = await fetch("http://127.0.0.1:8000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    return (                                                                    // Formulaire en HTML avec appel de handleSubmit
-        <main className="p-8 flex flex-col items-center">
-            <h1 className="text-2xl font-bold mb-4">Register</h1>
+      const data = await res.json();
+      if (res.ok) {
+        console.log("✅ Utilisateur inscrit :", data);
+      } else {
+        console.error("❌ Erreur d'inscription :", data);
+      }
+    } catch (err) {
+      console.error("❌ Erreur de requête :", err);
+    }
+  };
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-sm">
-            <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border p-2"
-                required
-            />
+  return (
+    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-6 text-indigo-700 text-center">Créer un compte</h1>
 
-            <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border p-2"
-                required
-            />
+        <form onSubmit={handleRegister} className="flex flex-col gap-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
 
-            <button type="submit" className="bg-blue-500 text-white p-2 rounded">Register</button>
-            </form>
-        </main>
-    );
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
 
+          <Button type="submit" className="w-full">
+            S’inscrire
+          </Button>
+        </form>
 
+        <p className="text-sm text-gray-500 mt-4 text-center">
+          Déjà un compte ?{" "}
+          <Link href="/login" className="text-indigo-600 hover:underline">
+            Connecte-toi ici
+          </Link>
+        </p>
+      </div>
+    </main>
+  );
 }
