@@ -58,11 +58,17 @@ def read_users_me(current_user: User = Depends(get_current_user)):      # Le "De
 # Route pour poster un nouveau MBTI
 @app.post("/mbti", response_model=MBTIOut)  #MBTIOut = le format que l'on va renvoyé à la bdd
 def save_mbti(
-    mbti: MBTICreate,                       # Le format que nous recevont par la page et l'user
+    mbti: MBTICreate,                       # Reçoit mbti_type et scores
     current_user: User = Security(get_current_user),       # On vérifie le token de l'user et récupère ses données
     db: Session = Depends(get_db)                          # La session de la bdd
 ):
-    return create_mbti(db=db, user_id=current_user.id, mbti_type=mbti.mbti_type)  # Appel de la fonciton CRUD
+    return create_mbti(
+        db=db,
+        user_id=current_user.id,
+        mbti_type=mbti.mbti_type,
+        scores=mbti.scores
+    )
+ # Appel de la fonciton CRUD
 
 
 @app.get("/mbti/me", response_model=MBTIOut)

@@ -29,20 +29,29 @@ def get_mbti_for_user(db: Session, user_id: int):
 
 
 #Création d'un MBTI
-def create_mbti(db: Session, user_id: int, mbti_type: str):
-    # On crée un objet MBTIResult lié au user
-    db_mbti = MBTIResult(user_id=user_id, mbti_type=mbti_type)
+def create_mbti(db: Session, user_id: int, mbti_type: str, scores: dict):
+    # Calcul des pourcentages
+    ie = round(scores["I"] / (scores["I"] + scores["E"]) * 100) if (scores["I"] + scores["E"]) > 0 else 0
+    sn = round(scores["S"] / (scores["S"] + scores["N"]) * 100) if (scores["S"] + scores["N"]) > 0 else 0
+    ft = round(scores["F"] / (scores["F"] + scores["T"]) * 100) if (scores["F"] + scores["T"]) > 0 else 0
+    jp = round(scores["J"] / (scores["J"] + scores["P"]) * 100) if (scores["J"] + scores["P"]) > 0 else 0
 
-    # On le prépare pour l’insertion
+    # Création de l'objet avec les % en plus
+    db_mbti = MBTIResult(
+        user_id=user_id,
+        mbti_type=mbti_type,
+        ie=ie,
+        sn=sn,
+        ft=ft,
+        jp=jp
+    )
+
     db.add(db_mbti)
-
-    # On valide l’insertion en DB
     db.commit()
-
-    # On recharge l’objet pour avoir son ID auto
     db.refresh(db_mbti)
 
     return db_mbti
+
 
 
 

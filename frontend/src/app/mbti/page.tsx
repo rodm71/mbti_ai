@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { questions } from "@/data/questions";
 import { MBTIQuestion } from "@/components/MBTIQuestion";
-import { calculateMbtiType } from "@/utils/calculateMbtiType";
+import { calculateMbtiType, calculateMbtiScores } from "@/utils/calculateMbtiType";
 import { Button } from "@/components/ui/button"; // bouton stylisé Shadcn
 
 export default function MBTIPage() {
@@ -23,7 +23,12 @@ export default function MBTIPage() {
     }
 
     const mbtiType = calculateMbtiType(answers);
+    const scores = calculateMbtiScores(answers);
     const token = localStorage.getItem("access_token");
+
+    // ✅ ICI LE BON LOG
+    console.log("📊 Payload envoyé au backend :", { mbti_type: mbtiType, scores });
+
     if (!token) {
       console.error("❌ Aucun token trouvé.");
       return;
@@ -36,7 +41,7 @@ export default function MBTIPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ mbti_type: mbtiType }),
+        body: JSON.stringify({ mbti_type: mbtiType, scores }),
       });
 
       if (!res.ok) {

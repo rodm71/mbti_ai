@@ -1,8 +1,8 @@
 from pydantic import BaseModel  # type: ignore # On importe Pydantic, la brique pour dire "voici la forme des données"
 from datetime import datetime
+from typing import Dict
 
 # Faire comprendre à FastAPI comment on reçoit et on renvoie les données
-
 
 #Utilisateur ---------------
 
@@ -32,13 +32,18 @@ class UserLogin(BaseModel):
 #Entrée MBTI
 class MBTICreate(BaseModel):        # Quand l'user envoie son résultat par Post /mbti, Fast API valide -> Est-ce qu'il a bien envoyé un mbti_type de type string ?
     mbti_type: str
-
+    scores: Dict[str, int]  # On attend un objet scores : {"I": int, "E": int, ...}
 
 #Sortie MBTI
 class MBTIOut(BaseModel):
     id: int
     mbti_type: str
+    ie: int
+    sn: int
+    ft: int
+    jp: int
     created_at: datetime
 
     class Config:
-        from_attributes = True  # Pour convertir l'objet SQLAlchemy en dict JSON
+        from_attributes = True
+

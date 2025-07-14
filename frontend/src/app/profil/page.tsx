@@ -5,8 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 
+type MbtiResult = {
+  mbti_type: string;
+  ie: number;
+  sn: number;
+  ft: number;
+  jp: number;
+};
+
 export default function ProfilPage() {
-  const [mbti, setMbti] = useState<string | null>(null);
+  const [mbti, setMbti] = useState<MbtiResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,12 +33,10 @@ export default function ProfilPage() {
           },
         });
 
-        if (!res.ok) {
-          throw new Error("Impossible de récupérer le MBTI");
-        }
+        if (!res.ok) throw new Error("Impossible de récupérer le MBTI");
 
-        const data = await res.json(); // { mbti_type: "INTJ" }
-        setMbti(data.mbti_type);
+        const data = await res.json();
+        setMbti(data);
       } catch (err) {
         setError("Erreur lors du chargement du MBTI.");
         console.error(err);
@@ -59,13 +65,19 @@ export default function ProfilPage() {
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4 mt-4">
             <Badge className="text-lg px-4 py-2 bg-purple-600 text-black hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-400">
-              {mbti}
+              {mbti.mbti_type}
             </Badge>
 
-            <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
+            <div className="w-full space-y-2 text-sm text-zinc-700 dark:text-zinc-300 text-left">
+              <p>I / E : {mbti.ie}% I</p>
+              <p>S / N : {mbti.sn}% S</p>
+              <p>F / T : {mbti.ft}% F</p>
+              <p>J / P : {mbti.jp}% J</p>
+            </div>
+
+            <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
               Tu peux refaire le test à tout moment pour mettre à jour ton type.
             </p>
-            {/* <Button variant="outline">Reprendre le test</Button> */}
           </CardContent>
         </Card>
       ) : (

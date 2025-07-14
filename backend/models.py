@@ -18,8 +18,13 @@ class MBTIResult(Base):
     __tablename__ = "mbti_results"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    mbti_type = Column(String, index=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    owner = relationship("User", back_populates="mbti_results")             #Chaque MBTIResult appartient à un User
+    user_id = Column(Integer, ForeignKey("users.id"))       #ID de l'user
+    mbti_type = Column(String, index=True)          #Type MBTI
+    ie = Column(Integer)                        #Pourcentage I
+    sn = Column(Integer)                        #Pourcentage S
+    ft = Column(Integer)                        #Pourcentage F
+    jp = Column(Integer)                        #Pourcentage J
+    created_at = Column(DateTime(timezone=True), server_default=func.now())         #Date de création
+
+    owner = relationship("User", back_populates="mbti_results")                 #Relation avec la table User
 
