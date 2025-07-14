@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
 
 type MBTIResult = {
   mbti_type: string;
@@ -75,6 +77,13 @@ export default function ProfilPage() {
           <Dimension label="Sensation (S) / Intuition (N)" percent={mbti.sn} color="bg-green-600" dimension="S" />
           <Dimension label="Feeling (F) / Thinking (T)" percent={mbti.ft} color="bg-pink-600" dimension="F" />
           <Dimension label="Jugement (J) / Perception (P)" percent={mbti.jp} color="bg-yellow-500" dimension="J" />
+
+          <Button
+            onClick={() => window.location.href = "/mbti"}
+            className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-400 text-white text-lg mt-4"
+          >
+            Refaire le test MBTI
+          </Button>
         </CardContent>
       </Card>
     </main>
