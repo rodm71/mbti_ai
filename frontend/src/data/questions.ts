@@ -3,14 +3,14 @@ import { MBTIQuestion } from "@/types/mbti";
 
 export const questions: MBTIQuestion[] = [
   // EI - Extraversion vs Introversion
-  { id: 1, text: "Vous aimez être entouré(e) de gens et socialiser souvent.", dimension: "EI", direction: "A" },
-  { id: 2, text: "Vous préférez les activités solitaires aux événements sociaux.", dimension: "EI", direction: "B" },
-  { id: 3, text: "Vous trouvez facilement de l'énergie dans les interactions sociales.", dimension: "EI", direction: "A" },
+  { id: 1, text: "Vous préférez être entouré de gens plutôt que d'être seul", dimension: "EI", direction: "A" },
+  { id: 2, text: "Vous préférez les activités solitaires aux événements de groupe.", dimension: "EI", direction: "B" },
+  { id: 3, text: "Être entouré de gens vous énergise", dimension: "EI", direction: "A" },
   { id: 4, text: "Vous avez besoin de temps seul(e) pour recharger vos batteries.", dimension: "EI", direction: "B" },
   { id: 5, text: "Vous initiez souvent les conversations.", dimension: "EI", direction: "A" },
-  { id: 6, text: "Vous attendez que les autres fassent le premier pas pour parler.", dimension: "EI", direction: "B" },
+  { id: 6, text: "Vous attendez que les autres fassent le premier pas vous présenter", dimension: "EI", direction: "B" },
   { id: 7, text: "Vous vous sentez à l'aise dans les grands groupes.", dimension: "EI", direction: "A" },
-  { id: 8, text: "Les groupes nombreux vous fatiguent rapidement.", dimension: "EI", direction: "B" },
+  { id: 8, text: "Les groupes nombreux vous fatiguent ou vous opressent rapidement.", dimension: "EI", direction: "B" },
   { id: 9, text: "Vous parlez souvent sans trop réfléchir.", dimension: "EI", direction: "A" },
   { id: 10, text: "Vous préférez écouter avant de parler.", dimension: "EI", direction: "B" },
 
